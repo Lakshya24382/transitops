@@ -4,7 +4,7 @@ import StatusBadge from '../components/StatusBadge';
 import * as tripsApi from '../api/trips';
 import * as vehiclesApi from '../api/vehicles';
 import * as driversApi from '../api/drivers';
-import { downloadCSV } from '../utils/downloadCSV';
+import { downloadCSV, downloadPDF } from '../utils/downloadCSV';
 
 const emptyForm = {
   source: '', destination: '', vehicle_id: '', driver_id: '',
@@ -98,6 +98,10 @@ export default function Trips() {
   return (
     <Layout title="Trip Dispatcher">
       <div className="flex justify-end mb-3">
+        <button onClick={() => downloadPDF('/export/trips/pdf', 'trips.pdf')}
+          className="bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-200 mr-2">
+          Export PDF
+        </button>
         <button onClick={() => downloadCSV('/export/trips', 'trips.csv')}
           className="bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-200">
           Export CSV

@@ -133,3 +133,116 @@ export async function getMonthlyRevenue(req, res) {
     res.status(500).json({ error: 'Failed to fetch monthly revenue' });
   }
 }
+
+import { createPDF, drawHeader, drawTable } from '../utils/pdf.js';
+
+export async function exportAnalyticsPDF(req, res) {
+  try {
+    const [fuelEffResult, fleetUtilResult, opCostResult, roiResult, topCostResult] = await Promise.all([
+      pool.query(`
+        SELECT COALESCE(SUM(final_odometer), 0) as total_distance, COALESCE(SUM(fuel_consumed_l), 0) as total_fuel
+        FROM trips WHERE status = 'Completed' AND fuel_consumed_l > 0
+      `),
+      pool.query(`
+        SELECT COUNT(*) FILTER (WHERE status = 'On Trip') as on_trip, COUNT(*) FILTER (WHERE status != 'Retired') as active_total
+        FROM vehicles
+      `),
+      pool.query(`
+        SELECT
+          COALESCE((SELECT SUM(cost) FROM fuel_logs), 0) as total_fuel,
+          COALESCE((SELECT SUM(cost) FROM maintenance_logs), 0) as total_maintenance
+      `),
+      pool.query(`
+        SELECT
+          v.registration_no, v.name_model, v.acquisition_cost,
+          COALESCE(SUM(t.planned_distance_km) FILTER (WHERE t.status = 'Completed'), 0) as total_distance,
+          COALESCE((SELECT SUM(cost) FROM fuel_logs WHERE vehicle_id = v.id), 0) as total_fuel,
+          COALESCE((SELECT SUM(cost) FROM maintenance_logs WHERE vehicle_id = v.id), 0) as total_maintenance
+        FROM vehicles v
+        LEFT JOIN trips t ON t.vehicle_id = v.id
+        GROUP BY v.id
+        ORDER BY v.registration_no
+      `),
+      pool.query(`
+        SELECT
+          v.registration_no,
+          COALESCE((SELECT SUM(cost) FROM fuel_logs WHERE vehicle_id = v.id), 0) +
+          COALESCE((SELECT SUM(cost) FROM maintenance_logs WHERE vehicle_id = v.id), 0) as total_cost
+        FROM vehicles v
+        ORDER BY total_cost DESC
+        LIMIT 5
+      `),
+    ]);
+
+    const RATE_PER_KM = 25;
+    const { total_distance, total_fuel } = fuelEffResult.rows[0];
+    const fuelEfficiency = total_fuel > 0 ? (total_distance / total_fuel).toFixed(1) : 0;
+
+    const { on_trip, active_total } = fleetUtilResult.rows[0];
+    const utilization = active_total > 0 ? ((on_trip / active_total) * 100).toFixed(1) : 0;
+
+    const totalFuelCost = parseFloat(opCostResult.rows[0].total_fuel);
+    const totalMaintCost = parseFloat(opCostResult.rows[0].total_maintenance);
+    const totalOpCost = totalFuelCost + totalMaintCost;
+
+    const doc = createPDF(res, `analytics_report_${Date.now()}.pdf`);
+    let y = drawHeader(doc, 'Reports & Analytics Summary');
+
+    // KPI summary row
+    doc.fontSize(9).font('Helvetica-Bold').fillColor('#374151');
+    const kpis = [
+      ['Fuel Efficiency', `${fuelEfficiency} km/l`],
+      ['Fleet Utilization', `${utilization}%`],
+      ['Operational Cost', `₹${totalOpCost.toLocaleString()}`],
+    ];
+    let kx = 40;
+    kpis.forEach(([label, value]) => {
+      doc.roundedRect(kx, y, 160, 45, 4).fillAndStroke('#f9fafb', '#e5e7eb');
+      doc.fillColor('#6b7280').fontSize(8).font('Helvetica').text(label.toUpperCase(), kx + 10, y + 8);
+      doc.fillColor('#111827').fontSize(14).font('Helvetica-Bold').text(value, kx + 10, y + 22);
+      kx += 172;
+    });
+    y += 65;
+
+    // Top costliest vehicles
+    doc.fillColor('#111827').fontSize(11).font('Helvetica-Bold').text('Top Costliest Vehicles', 40, y);
+    y += 18;
+    y = drawTable(
+      doc, y,
+      ['Vehicle', 'Total Cost'],
+      topCostResult.rows.map(v => [v.registration_no, `₹${Number(v.total_cost).toLocaleString()}`]),
+      [200, 200]
+    );
+    y += 20;
+
+    // Vehicle ROI breakdown
+    if (y > 650) { doc.addPage(); y = 40; }
+    doc.fillColor('#111827').fontSize(11).font('Helvetica-Bold').text('Vehicle ROI Breakdown', 40, y);
+    y += 18;
+
+    const roiRows = roiResult.rows.map(row => {
+      const revenue = parseFloat(row.total_distance) * RATE_PER_KM;
+      const costs = parseFloat(row.total_fuel) + parseFloat(row.total_maintenance);
+      const roi = row.acquisition_cost > 0 ? (((revenue - costs) / parseFloat(row.acquisition_cost)) * 100).toFixed(1) : 0;
+      return [
+        row.registration_no,
+        `₹${revenue.toLocaleString()}`,
+        `₹${parseFloat(row.total_fuel).toLocaleString()}`,
+        `₹${parseFloat(row.total_maintenance).toLocaleString()}`,
+        `${roi}%`
+      ];
+    });
+
+    drawTable(doc, y, ['Vehicle', 'Revenue', 'Fuel', 'Maintenance', 'ROI'], roiRows, [90, 105, 100, 105, 95]);
+
+    doc.fontSize(7).fillColor('#9ca3af').text(
+      'Note: Revenue is an estimated proxy (distance x rate/km) for demo purposes.',
+      40, 800
+    );
+
+    doc.end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message || 'Failed to export analytics PDF' });
+  }
+}

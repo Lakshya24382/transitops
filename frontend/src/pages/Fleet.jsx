@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import Modal from '../components/Modal';
 import StatusBadge from '../components/StatusBadge';
 import { useAuth } from '../context/AuthContext';
-import { downloadCSV } from '../utils/downloadCSV';
+import { downloadCSV, downloadPDF } from '../utils/downloadCSV';
 import * as vehiclesApi from '../api/vehicles';
 
 const VEHICLE_TYPES = ['Van', 'Truck', 'Mini'];
@@ -83,6 +83,10 @@ export default function Fleet() {
           </select>
           {canEdit && (
             <>
+              <button onClick={() => downloadPDF('/export/vehicles/pdf', 'vehicles.pdf')}
+                className="bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-200">
+                Export PDF
+              </button>
               <button onClick={() => downloadCSV('/export/vehicles', 'vehicles.csv')}
                 className="bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-200">
                 Export CSV

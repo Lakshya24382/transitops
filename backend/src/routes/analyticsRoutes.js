@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { requireAuth, requireRole } from '../middleware/auth.js';
 import {
   getFuelEfficiency, getFleetUtilization, getOperationalCostSummary,
-  getVehicleROI, getTopCostliestVehicles, getMonthlyRevenue
+  getVehicleROI, getTopCostliestVehicles, getMonthlyRevenue, exportAnalyticsPDF
 } from '../controllers/analyticsController.js';
 
 const router = Router();
@@ -15,5 +15,6 @@ router.get('/operational-cost', getOperationalCostSummary);
 router.get('/vehicle-roi', getVehicleROI);
 router.get('/top-costliest', getTopCostliestVehicles);
 router.get('/monthly-revenue', getMonthlyRevenue);
+router.get('/export/pdf', exportAnalyticsPDF);
 
 export default router;

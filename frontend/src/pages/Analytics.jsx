@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import KPICard from '../components/KPICard';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import * as analyticsApi from '../api/analytics';
+import { downloadPDF } from '../utils/downloadCSV';
 
 export default function Analytics() {
   const [fuelEff, setFuelEff] = useState(null);
@@ -53,6 +54,10 @@ export default function Analytics() {
     <Layout title="Reports & Analytics">
       <div className="flex items-center justify-between mb-4">
         <input placeholder="Search..." className="border border-gray-300 rounded-md px-3 py-2 text-sm w-64" />
+        <button onClick={() => downloadPDF('/analytics/export/pdf', 'analytics_report.pdf')}
+          className="bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-200">
+          Export PDF
+        </button>
       </div>
 
       <div className="grid grid-cols-4 gap-3 mb-6">

@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import Modal from '../components/Modal';
 import StatusBadge from '../components/StatusBadge';
 import { useAuth } from '../context/AuthContext';
-import { downloadCSV } from '../utils/downloadCSV';
+import { downloadCSV, downloadPDF } from '../utils/downloadCSV';
 import * as driversApi from '../api/drivers';
 
 const emptyForm = {
@@ -77,6 +77,10 @@ export default function Drivers() {
         />
         {canEdit && (
           <div className="flex gap-2">
+            <button onClick={() => downloadPDF('/export/drivers/pdf', 'drivers.pdf')}
+              className="bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-200">
+              Export PDF
+            </button>
             <button onClick={() => downloadCSV('/export/drivers', 'drivers.csv')}
               className="bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-200">
               Export CSV
