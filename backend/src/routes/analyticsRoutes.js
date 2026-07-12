@@ -7,7 +7,7 @@ import {
 
 const router = Router();
 router.use(requireAuth);
-router.use(requireRole('Fleet Manager', 'Financial Analyst'));
+router.use(requireRole('Fleet Manager', 'Financial Analyst', 'Safety Officer'));
 
 router.get('/fuel-efficiency', getFuelEfficiency);
 router.get('/fleet-utilization', getFleetUtilization);

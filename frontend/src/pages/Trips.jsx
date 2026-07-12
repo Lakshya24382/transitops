@@ -4,6 +4,7 @@ import StatusBadge from '../components/StatusBadge';
 import * as tripsApi from '../api/trips';
 import * as vehiclesApi from '../api/vehicles';
 import * as driversApi from '../api/drivers';
+import { downloadCSV } from '../utils/downloadCSV';
 
 const emptyForm = {
   source: '', destination: '', vehicle_id: '', driver_id: '',
@@ -96,6 +97,13 @@ export default function Trips() {
 
   return (
     <Layout title="Trip Dispatcher">
+      <div className="flex justify-end mb-3">
+        <button onClick={() => downloadCSV('/export/trips', 'trips.csv')}
+          className="bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-200">
+          Export CSV
+        </button>
+      </div>
+
       {/* Lifecycle stepper */}
       <div className="flex items-center gap-2 mb-6">
         {STAGES.map((stage, i) => (

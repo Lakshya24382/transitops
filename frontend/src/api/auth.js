@@ -8,3 +8,9 @@ export const signup = (data) =>
 
 export const getMe = () =>
   client.get('/auth/me').then(r => r.data);
+
+export const changePassword = (currentPassword, newPassword) =>
+  client.post('/auth/change-password', { currentPassword, newPassword }).then(r => r.data);
+
+export const updateProfile = (name) =>
+  client.put('/auth/profile', { name }).then(r => r.data);

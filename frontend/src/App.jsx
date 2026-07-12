@@ -19,7 +19,6 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
 
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/fleet" element={<ProtectedRoute allowedRoles={['Fleet Manager', 'Dispatcher']}><Fleet /></ProtectedRoute>} />
@@ -27,8 +26,9 @@ export default function App() {
           <Route path="/trips" element={<ProtectedRoute allowedRoles={['Fleet Manager', 'Dispatcher']}><Trips /></ProtectedRoute>} />
           <Route path="/maintenance" element={<ProtectedRoute allowedRoles={['Fleet Manager']}><Maintenance /></ProtectedRoute>} />
           <Route path="/fuel-expenses" element={<ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}><FuelExpenses /></ProtectedRoute>} />
-          <Route path="/analytics" element={<ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst']}><Analytics /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute allowedRoles={['Fleet Manager']}><SettingsPage /></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute allowedRoles={['Fleet Manager', 'Financial Analyst', 'Safety Officer']}><Analytics /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+          <Route path="/signup" element={<ProtectedRoute allowedRoles={['Fleet Manager']}><Signup /></ProtectedRoute>} />
 
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>

@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import Modal from '../components/Modal';
 import StatusBadge from '../components/StatusBadge';
 import { useAuth } from '../context/AuthContext';
+import { downloadCSV } from '../utils/downloadCSV';
 import * as vehiclesApi from '../api/vehicles';
 
 const VEHICLE_TYPES = ['Van', 'Truck', 'Mini'];
@@ -81,10 +82,16 @@ export default function Fleet() {
             {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
           {canEdit && (
-            <button onClick={() => setShowModal(true)}
-              className="bg-brand-gold text-white text-sm font-medium px-4 py-2 rounded-md hover:opacity-90">
-              + Add Vehicle
-            </button>
+            <>
+              <button onClick={() => downloadCSV('/export/vehicles', 'vehicles.csv')}
+                className="bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-200">
+                Export CSV
+              </button>
+              <button onClick={() => setShowModal(true)}
+                className="bg-brand-gold text-white text-sm font-medium px-4 py-2 rounded-md hover:opacity-90">
+                + Add Vehicle
+              </button>
+            </>
           )}
         </div>
       </div>

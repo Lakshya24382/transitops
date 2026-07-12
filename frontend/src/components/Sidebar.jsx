@@ -12,8 +12,8 @@ const NAV_ITEMS = [
   { to: '/trips', label: 'Trips', icon: Route, roles: ['Fleet Manager', 'Dispatcher'] },
   { to: '/maintenance', label: 'Maintenance', icon: Wrench, roles: ['Fleet Manager'] },
   { to: '/fuel-expenses', label: 'Fuel & Expenses', icon: Fuel, roles: ['Fleet Manager', 'Financial Analyst'] },
-  { to: '/analytics', label: 'Analytics', icon: BarChart3, roles: ['Fleet Manager', 'Financial Analyst'] },
-  { to: '/settings', label: 'Settings', icon: Settings, roles: ['Fleet Manager'] },
+  { to: '/analytics', label: 'Analytics', icon: BarChart3, roles: ['Fleet Manager', 'Financial Analyst', 'Safety Officer'] },
+  { to: '/settings', label: 'Settings', icon: Settings, roles: ['Fleet Manager', 'Dispatcher', 'Safety Officer', 'Financial Analyst'] },
 ];
 
 const ROLE_ABBR = {

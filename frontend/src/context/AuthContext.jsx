@@ -32,6 +32,11 @@ export function AuthProvider({ children }) {
     return user;
   };
 
+  const updateUser = (updatedUser) => {
+    localStorage.setItem('transitops_user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
   const logout = () => {
     localStorage.removeItem('transitops_token');
     localStorage.removeItem('transitops_user');
@@ -39,7 +44,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

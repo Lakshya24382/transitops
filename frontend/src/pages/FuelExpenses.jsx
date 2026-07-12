@@ -1,9 +1,9 @@
-cat > src/pages/FuelExpenses.jsx << 'EOF'
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
 import * as fuelExpenseApi from '../api/fuelExpense';
 import * as vehiclesApi from '../api/vehicles';
+import { downloadCSV } from '../utils/downloadCSV';
 
 const emptyFuelForm = { vehicle_id: '', liters: '', cost: '', log_date: '' };
 const emptyExpenseForm = { vehicle_id: '', toll: '', other: '' };
@@ -76,6 +76,10 @@ export default function FuelExpenses() {
       <div className="flex items-center justify-between mb-4">
         <input placeholder="Search..." className="border border-gray-300 rounded-md px-3 py-2 text-sm w-64" />
         <div className="flex gap-2">
+          <button onClick={() => downloadCSV('/export/operational-report', 'operational_report.csv')}
+            className="bg-gray-100 text-gray-700 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-200">
+            Export CSV
+          </button>
           <button onClick={() => setShowFuelModal(true)}
             className="bg-brand-gold text-white text-sm font-medium px-4 py-2 rounded-md hover:opacity-90">
             + Log Fuel

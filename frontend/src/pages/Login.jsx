@@ -2,12 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const ROLES = ['Dispatcher', 'Fleet Manager', 'Safety Officer', 'Financial Analyst'];
-
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('Dispatcher');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -18,10 +15,7 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      const user = await login(email, password);
-      if (user.role !== role) {
-        setError(`This account is registered as ${user.role}, not ${role}. Logged in with actual role.`);
-      }
+      await login(email, password);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed');
@@ -44,7 +38,7 @@ export default function Login() {
           <div className="mt-16">
             <p className="text-sm text-gray-300 mb-3">One login, four roles:</p>
             <ul className="space-y-2 text-sm text-gray-400">
-              {ROLES.map(r => (
+              {['Dispatcher', 'Fleet Manager', 'Safety Officer', 'Financial Analyst'].map(r => (
                 <li key={r} className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-brand-gold rounded-full" /> {r}
                 </li>
@@ -92,16 +86,6 @@ export default function Login() {
                 className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold"
               />
             </div>
-            <div>
-              <label className="text-xs font-medium text-gray-600 uppercase">Role (RBAC)</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold"
-              >
-                {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
-              </select>
-            </div>
 
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-3 py-2">
@@ -117,10 +101,6 @@ export default function Login() {
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </form>
-
-          <p className="text-xs text-gray-400 mt-6 text-center">
-            No account? <a href="/signup" className="text-brand-gold font-medium">Create one</a>
-          </p>
         </div>
       </div>
     </div>
