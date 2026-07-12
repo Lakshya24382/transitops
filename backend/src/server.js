@@ -10,6 +10,9 @@ import driverRoutes from './routes/driverRoutes.js';
 import tripRoutes from './routes/tripRoutes.js';
 import maintenanceRoutes from './routes/maintenanceRoutes.js';
 import fuelExpenseRoutes from './routes/fuelExpenseRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import exportRoutes from './routes/exportRoutes.js';
 
 const app = express();
 app.use(cors());
@@ -34,6 +37,9 @@ app.use('/api/drivers', driverRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api', fuelExpenseRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/export', exportRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚚 Server running on http://localhost:${PORT}`));
